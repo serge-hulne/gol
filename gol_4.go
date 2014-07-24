@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -33,6 +34,9 @@ var Value [10]int
 
 // Channel (to take a snapshop of the arry of cells when it has been randomly modified by a cell)
 var CellsState [10]chan string
+
+// Mutex
+var lock sync.Mutex
 
 // Get the neighbours of cell "i" (which holds value: "Value(i)")
 func GetNeighbours(I int) []int {
@@ -69,6 +73,9 @@ func sumAll() int {
 func RunCell(i int, C chan bool) {
 	CellsState[i] = make(chan string)
 	for {
+
+		/////////////
+		lock.Lock()
 		if sumNeighbours(i) == 0 || sumNeighbours(i) == 2 {
 			// Rule 1 : Starvation and over-crowding:
 			Value[i] = 0
@@ -76,6 +83,9 @@ func RunCell(i int, C chan bool) {
 			//Rule 2 : "Reproduction"
 			Value[i] = 1
 		}
+		lock.Unlock()
+		////////////
+
 		// -- Dump the state of the array "Value" after one cell made a change (or not)
 		// depending of the state of its neighbours at that point in time :
 		//fmt.Printf("V = %v\n", Value)
