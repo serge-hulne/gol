@@ -1,18 +1,20 @@
-// gol_7.go
-
-
 /*
 
 - Application implementing a one-dimensional simplified version of Conway's Game of life:
 
 - There are no generations, cells just check and change (at a pace just slowed down
-by the timer) in complete independence of each other, just based on the
-sum of the values of their neighbours at a given moment.
+by the timer), in complete independence of each other, just based on the
+sum of the values of their neighbours at any given moment.
 
 - Basically A "cell" is repented by a value (0 or 1) hold in the array Value[]
+
 - Each cell (i) lives in its own goroutine RunCell(i) and has the value Value[i]
+
 - Each cell (i) evolves independently of the others, its evolution being determined only
 by the state of its two closest neighbours (see function Rucell for the detail of the rules)
+
+- The array []Value is not used as a global container concurrently accessed by different coroutines,
+this array merely serves as a mean to address the cells (purely a convenient naming convention)
 
 */
 
@@ -74,7 +76,10 @@ func sumAll() int {
 // Game of life:
 
 func RunCell(i int, C chan bool) {
+	// -- Return channel specific to cell [i]
 	CellsState[i] = make(chan string)
+
+	// -- Endless loop specific to cell [i]
 	for {
 
 		/////////////
@@ -160,5 +165,6 @@ func main() {
 		}(z)
 	}
 
+	// -- Chanel C waiting for termination of  RunCell() goroutines
 	<-C
 }
