@@ -1,4 +1,4 @@
-// gol_1.go
+// gol_7.go
 
 /*
 
@@ -68,8 +68,10 @@ func sumAll() int {
 	return s
 }
 
-// -- funcion implementing a one-dimensional simplified version of
-// the rules of Conway's Game of life:
+// -- funcion implementing a one-dimensional
+// simplified version of the rules of  Conway's
+// Game of life:
+
 func RunCell(i int, C chan bool) {
 	CellsState[i] = make(chan string)
 	for {
@@ -86,16 +88,11 @@ func RunCell(i int, C chan bool) {
 		lock.Unlock()
 		////////////
 
-		// -- Dump the state of the array "Value" after one cell made a change (or not)
-		// depending of the state of its neighbours at that point in time :
-		//fmt.Printf("V = %v\n", Value)
 		S := make([]string, 10)
 		for j, v := range Value {
 			if v == 0 {
-				//print("[ ]")
 				S[j] = "[ ]"
 			} else {
-				//print("[*]")
 				S[j] = "[*]"
 			}
 		}
@@ -143,7 +140,8 @@ func main() {
 	}
 
 	// -- Starting 10 parallel goroutines
-	// -- Channel "C" is used merely as a lock (same as join() in other programming languages)
+	// -- Channel "C" is used merely as a lock
+	//(same as join() in other programming languages)
 	C := make(chan bool)
 
 	for i := 0; i < 10; i++ {
@@ -152,75 +150,14 @@ func main() {
 
 	time.Sleep(1e9)
 
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 0, <-CellsState[0])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 1, <-CellsState[1])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 2, <-CellsState[2])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 3, <-CellsState[3])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 4, <-CellsState[4])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 5, <-CellsState[5])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 6, <-CellsState[6])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 7, <-CellsState[7])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 8, <-CellsState[8])
-		}
-	}()
-
-	go func() {
-		for {
-
-			fmt.Printf("S[%d] = %s\n", 9, <-CellsState[9])
-		}
-	}()
+	// -- Pulling results from return channels
+	for z, _ := range CellsState {
+		go func(z int) {
+			for {
+				fmt.Printf("S[%d] = %s\n", z, <-CellsState[z])
+			}
+		}(z)
+	}
 
 	<-C
 }
