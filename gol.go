@@ -1,5 +1,6 @@
 // gol_7.go
 
+
 /*
 
 - Application implementing a one-dimensional simplified version of Conway's Game of life:
